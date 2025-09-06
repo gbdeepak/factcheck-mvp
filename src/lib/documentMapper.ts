@@ -66,16 +66,16 @@ function findBestMatch(targetTitle: string, availableDocs: string[]): string | n
   const normalizedTarget = normalizeText(targetTitle);
   let bestMatch: { doc: string; score: number } | null = null;
   
-  availableDocs.forEach(doc => {
+  for (const doc of availableDocs) {
     const normalizedDoc = normalizeText(doc.replace('.docx', ''));
     const similarity = calculateSimilarity(normalizedTarget, normalizedDoc);
     
     if (similarity > 0.7 && (!bestMatch || similarity > bestMatch.score)) {
       bestMatch = { doc, score: similarity };
     }
-  });
+  }
   
-  return bestMatch?.doc || null;
+  return bestMatch ? bestMatch.doc : null;
 }
 
 // Map document titles from factIndex.json to actual .docx filenames in docs/ directory
