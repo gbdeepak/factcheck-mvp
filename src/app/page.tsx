@@ -1,103 +1,174 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import { useState, useEffect } from 'react';
+import { DashboardStatsComponent } from '@/components/dashboard-stats';
+import { FilterTabs } from '@/components/filter-tabs';
+import { FactCard } from '@/components/fact-card';
+import { DocumentViewer } from '@/components/document-viewer';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FactData, FactGroup, FilterType, Fact, DashboardStats } from '@/types';
+import { processFactData, filterFactGroups, searchFactGroups } from '@/lib/data-processor';
+import { Search, ClipboardList, AlertTriangle } from 'lucide-react';
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+export default function HomePage() {
+  const [factData, setFactData] = useState<FactData>({});
+  const [factGroups, setFactGroups] = useState<FactGroup[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalFacts: 0,
+    inconsistentFacts: 0,
+    consistentFacts: 0,
+    consistencyRate: 0
+  });
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedFact, setSelectedFact] = useState<Fact | null>(null);
+  const [isDocumentViewerOpen, setIsDocumentViewerOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadFactData();
+  }, []);
+
+  const loadFactData = async () => {
+    try {
+      const response = await fetch('/factIndex.json');
+      const data: FactData = await response.json();
+      setFactData(data);
+      
+      const { factGroups: processedGroups, stats: processedStats } = processFactData(data);
+      setFactGroups(processedGroups);
+      setStats(processedStats);
+    } catch (error) {
+      console.error('Error loading fact data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewDocument = (fact: Fact) => {
+    setSelectedFact(fact);
+    setIsDocumentViewerOpen(true);
+  };
+
+  const handleCloseDocumentViewer = () => {
+    setIsDocumentViewerOpen(false);
+    setSelectedFact(null);
+  };
+
+  const filteredFactGroups = searchFactGroups(
+    filterFactGroups(factGroups, activeFilter),
+    searchTerm
+  );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading policy facts...</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Policy Document Inconsistency Analyzer
+          </h1>
+          <p className="text-gray-600">
+            Review facts extracted from policy documents, identify inconsistencies, and analyze policy compliance.
+          </p>
+        </div>
+
+        {/* Dashboard Stats */}
+        <div className="mb-8">
+          <DashboardStatsComponent stats={stats} />
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="mb-6">
+          <FilterTabs
+            activeFilter={activeFilter}
+            onFilterChange={setActiveFilter}
+            stats={{
+              total: stats.totalFacts,
+              inconsistent: stats.inconsistentFacts,
+              consistent: stats.consistentFacts
+            }}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+
+        {/* Search */}
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search facts, documents, or values..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
+
+        {/* Content */}
+        {activeFilter === 'inconsistent' && filteredFactGroups.length > 0 && (
+          <div className="mb-6">
+            <Card className="border-yellow-200 bg-yellow-50">
+              <CardHeader>
+                <CardTitle className="flex items-center text-yellow-800">
+                  <AlertTriangle className="h-5 w-5 mr-2" />
+                  Policy Inconsistencies Requiring Attention
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-yellow-700">
+                  Critical Issues Found: The following policy fields have conflicting values across different documents. 
+                  This may lead to confusion, compliance issues, or operational problems.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Facts List */}
+        <div className="space-y-4">
+          {filteredFactGroups.length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                <ClipboardList className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No facts found</h3>
+                <p className="text-gray-600">
+                  {searchTerm 
+                    ? `No facts match your search for "${searchTerm}"`
+                    : `No ${activeFilter === 'all' ? '' : activeFilter} facts available`
+                  }
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            filteredFactGroups.map((factGroup) => (
+              <FactCard
+                key={factGroup.key}
+                factGroup={factGroup}
+                onViewDocument={handleViewDocument}
+              />
+            ))
+          )}
+        </div>
+
+        {/* Document Viewer Modal */}
+        <DocumentViewer
+          fact={selectedFact}
+          isOpen={isDocumentViewerOpen}
+          onClose={handleCloseDocumentViewer}
+        />
+      </div>
     </div>
   );
 }
