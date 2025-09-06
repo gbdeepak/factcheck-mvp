@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { renderAsync } from 'docx-preview';
 
 interface DOCXViewerProps {
@@ -49,13 +49,6 @@ const DOCXViewer: React.FC<DOCXViewerProps> = ({
     }
   }, [docxUrl, targetText, isMultiLine]);
 
-  // Load DOCX when highlight params are set
-  useEffect(() => {
-    if (highlightParams && isMounted) {
-      loadDOCX();
-    }
-  }, [highlightParams, isMounted]);
-
   // Callback ref to ensure container is ready
   const setContainerRef = (element: HTMLDivElement | null) => {
     containerRef.current = element;
@@ -69,7 +62,7 @@ const DOCXViewer: React.FC<DOCXViewerProps> = ({
   };
 
   // Load DOCX file
-  const loadDOCX = async (docxUrl?: string) => {
+  const loadDOCX = useCallback(async (docxUrl?: string) => {
     const urlToLoad = docxUrl || highlightParams?.docxUrl;
     if (!urlToLoad) {
       console.log('[DOCXViewer] No DOCX URL provided');
@@ -136,7 +129,15 @@ const DOCXViewer: React.FC<DOCXViewerProps> = ({
       setError('Failed to load DOCX file');
       setIsLoading(false);
     }
-  };
+  }, [highlightParams, containerReady, isMounted]);
+
+  // Load DOCX when highlight params are set
+  useEffect(() => {
+    if (highlightParams && isMounted) {
+      loadDOCX();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [highlightParams, isMounted]);
 
   // Calculate similarity between two strings
   const calculateSimilarity = (str1: string, str2: string): number => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { FactGroup, Fact } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -72,7 +72,7 @@ export function ResizableSidePanel({ factGroup, isOpen, onClose }: ResizableSide
     setIsResizing(true);
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isResizing) return;
     
     const newWidth = window.innerWidth - e.clientX;
@@ -82,7 +82,7 @@ export function ResizableSidePanel({ factGroup, isOpen, onClose }: ResizableSide
     if (newWidth >= minWidth && newWidth <= maxWidth) {
       setPanelWidth(newWidth);
     }
-  };
+  }, [isResizing]);
 
   const handleMouseUp = () => {
     setIsResizing(false);
@@ -107,6 +107,7 @@ export function ResizableSidePanel({ factGroup, isOpen, onClose }: ResizableSide
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isResizing]);
 
   if (!factGroup) return null;
@@ -263,7 +264,7 @@ export function ResizableSidePanel({ factGroup, isOpen, onClose }: ResizableSide
                             <div className="mb-3">
                               <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Source Sentence</label>
                               <p className="text-sm text-gray-700 mt-1 bg-blue-50 p-2 rounded border-l-2 border-blue-200">
-                                "{fact.source_sentence}"
+                                &ldquo;{fact.source_sentence}&rdquo;
                               </p>
                             </div>
                           )}

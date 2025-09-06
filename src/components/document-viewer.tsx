@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Fact } from '@/types';
@@ -19,13 +19,7 @@ export function DocumentViewer({ fact, isOpen, onClose }: DocumentViewerProps) {
   const [loading, setLoading] = useState(false);
   const [showDocxViewer, setShowDocxViewer] = useState(false);
 
-  useEffect(() => {
-    if (fact && isOpen) {
-      loadDocument(fact.document_title);
-    }
-  }, [fact, isOpen]);
-
-  const loadDocument = async (documentTitle: string) => {
+  const loadDocument = useCallback(async (documentTitle: string) => {
     setLoading(true);
     try {
       // In a real app, you'd fetch the actual document content
@@ -59,7 +53,14 @@ This section would contain the full document content with proper formatting and 
     } finally {
       setLoading(false);
     }
-  };
+  }, [fact]);
+
+  useEffect(() => {
+    if (fact && isOpen) {
+      loadDocument(fact.document_title);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fact, isOpen]);
 
   const handleOpenDocx = () => {
     setShowDocxViewer(true);
