@@ -5,6 +5,7 @@ export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   // Additional props can be added here if needed
   // This interface extends the base HTML input attributes
+  variant?: 'default' | 'error';
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(

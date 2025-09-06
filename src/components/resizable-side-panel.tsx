@@ -107,7 +107,6 @@ export function ResizableSidePanel({ factGroup, isOpen, onClose }: ResizableSide
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isResizing]);
 
   if (!factGroup) return null;

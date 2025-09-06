@@ -136,7 +136,6 @@ const DOCXViewer: React.FC<DOCXViewerProps> = ({
     if (highlightParams && isMounted) {
       loadDOCX();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [highlightParams, isMounted]);
 
   // Calculate similarity between two strings

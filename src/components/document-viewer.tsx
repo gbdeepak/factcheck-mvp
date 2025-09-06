@@ -59,7 +59,6 @@ This section would contain the full document content with proper formatting and 
     if (fact && isOpen) {
       loadDocument(fact.document_title);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fact, isOpen]);
 
   const handleOpenDocx = () => {
