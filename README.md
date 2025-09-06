@@ -2,6 +2,10 @@
 
 A modern web application built with Next.js 14, TypeScript, and Tailwind CSS for analyzing policy document inconsistencies and reviewing extracted facts.
 
+## 🚀 Live Demo
+
+This application is deployed on Netlify and ready for production use.
+
 ## Features
 
 ### 📊 Dashboard Overview
@@ -18,12 +22,13 @@ A modern web application built with Next.js 14, TypeScript, and Tailwind CSS for
 - **Consistent Facts**: Filter to show only consistent facts
 - **Search**: Search across fact names, values, documents, and context
 
-### 📋 Interactive Fact Cards
+### 📋 Modern Table Interface
 
-- **Expandable Cards**: Click to expand and view detailed fact information
+- **Tabular Layout**: Clean table view with sortable columns
 - **Status Indicators**: Visual indicators for consistent (✅) and inconsistent (⚠️) facts
-- **Source Information**: View document source, reference, and context
-- **Document Viewer**: Click to open source documents with highlighting
+- **Interactive Rows**: Click rows to view detailed fact information in side panel
+- **Resizable Side Panel**: Expandable panel with detailed fact information
+- **Document Viewer**: Click to open source documents with highlighting in modal overlay
 
 ### 📄 Document Viewer
 
