@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { X, FileText, AlertTriangle, CheckCircle, ExternalLink, ChevronDown, ChevronRight } from 'lucide-react';
 import { getDocumentUrl, documentExists, getDocumentFileName } from '@/lib/documentMapper';
+import DOCXViewer from './docx-viewer';
 
 interface ResizableSidePanelProps {
   factGroup: FactGroup | null;
@@ -49,6 +50,8 @@ function CollapsibleSection({ title, children, defaultOpen = false }: Collapsibl
 export function ResizableSidePanel({ factGroup, isOpen, onClose, onOpenDocument }: ResizableSidePanelProps) {
   const [panelWidth, setPanelWidth] = useState(768); // Default width (twice the original)
   const [isResizing, setIsResizing] = useState(false);
+  const [showDocxViewer, setShowDocxViewer] = useState(false);
+  const [selectedFact, setSelectedFact] = useState<Fact | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Load saved width from localStorage
@@ -141,15 +144,14 @@ export function ResizableSidePanel({ factGroup, isOpen, onClose, onOpenDocument 
   const uniqueValues = [...new Set(factGroup.facts.map(fact => fact.value))];
 
   const handleOpenDocument = (fact: Fact) => {
-    // Open DOCX viewer in a new tab using the dedicated route - exactly like the working version
-    const docxUrl = getDocumentUrl(fact.document_title);
-    const viewerUrl = `/docx-viewer?docxUrl=${encodeURIComponent(docxUrl)}&docx=${encodeURIComponent(fact.source_sentence)}`;
-    
-    console.log('[ResizableSidePanel] Opening DOCX viewer with URL:', viewerUrl);
-    console.log('[ResizableSidePanel] Document URL:', docxUrl);
-    console.log('[ResizableSidePanel] Source sentence:', fact.source_sentence);
-    
-    window.open(viewerUrl, '_blank');
+    // Show DOCX viewer inline in the side panel
+    setSelectedFact(fact);
+    setShowDocxViewer(true);
+  };
+
+  const handleCloseDocxViewer = () => {
+    setShowDocxViewer(false);
+    setSelectedFact(null);
   };
 
   return (
@@ -289,6 +291,34 @@ export function ResizableSidePanel({ factGroup, isOpen, onClose, onOpenDocument 
           </div>
         </div>
       </div>
+
+      {/* DOCX Viewer Modal */}
+      {showDocxViewer && selectedFact && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full h-full max-w-6xl max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold">
+                {getDocumentFileName(selectedFact.document_title)}
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCloseDocxViewer}
+                className="p-1"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <DOCXViewer
+                docxUrl={getDocumentUrl(selectedFact.document_title)}
+                targetText={selectedFact.source_sentence}
+                onClose={handleCloseDocxViewer}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
