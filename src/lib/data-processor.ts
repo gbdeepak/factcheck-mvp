@@ -1,4 +1,4 @@
-import { Fact, FactGroup, FactData, DashboardStats } from '@/types';
+import { FactGroup, FactData, DashboardStats } from '@/types';
 
 export function processFactData(data: FactData): {
   factGroups: FactGroup[];

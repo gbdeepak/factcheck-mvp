@@ -47,7 +47,7 @@ function CollapsibleSection({ title, children, defaultOpen = false }: Collapsibl
   );
 }
 
-export function ResizableSidePanel({ factGroup, isOpen, onClose, onOpenDocument }: ResizableSidePanelProps) {
+export function ResizableSidePanel({ factGroup, isOpen, onClose }: ResizableSidePanelProps) {
   const [panelWidth, setPanelWidth] = useState(768); // Default width (twice the original)
   const [isResizing, setIsResizing] = useState(false);
   const [showDocxViewer, setShowDocxViewer] = useState(false);

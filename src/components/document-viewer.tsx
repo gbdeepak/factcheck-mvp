@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Fact } from '@/types';
 import { X, FileText, Search, ExternalLink } from 'lucide-react';
 import DOCXViewer from './docx-viewer';
@@ -45,7 +44,7 @@ This document contains policy information related to the extracted fact.
 ## Full Document Content
 This is a placeholder for the full document content. In a real implementation, this would load the actual markdown file content from the docs/ directory.
 
-The source sentence is: "${fact?.source_sentence}"
+The source sentence is: &ldquo;${fact?.source_sentence}&rdquo;
 
 ## Reference
 ${fact?.reference}
@@ -129,7 +128,7 @@ This section would contain the full document content with proper formatting and 
                 Source Sentence
               </h3>
               <p className="text-yellow-800 bg-yellow-100 p-3 rounded border">
-                "{fact.source_sentence}"
+                &ldquo;{fact.source_sentence}&rdquo;
               </p>
             </div>
 

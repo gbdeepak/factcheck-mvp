@@ -47,7 +47,6 @@ export function SidePanel({ factGroup, isOpen, onClose, onOpenDocument }: SidePa
   const StatusIcon = statusInfo.icon;
 
   const uniqueValues = [...new Set(factGroup.facts.map(fact => fact.value))];
-  const documentNames = [...new Set(factGroup.facts.map(fact => fact.document_title))];
 
   return (
     <>
@@ -158,7 +157,7 @@ export function SidePanel({ factGroup, isOpen, onClose, onOpenDocument }: SidePa
                         <div className="mt-3">
                           <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Source Sentence</label>
                           <p className="text-sm text-gray-700 mt-1 bg-blue-50 p-2 rounded border-l-2 border-blue-200">
-                            "{fact.source_sentence}"
+                            &ldquo;{fact.source_sentence}&rdquo;
                           </p>
                         </div>
                       )}

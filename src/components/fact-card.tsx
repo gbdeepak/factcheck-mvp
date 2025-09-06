@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Fact, FactGroup } from '@/types';
-import { ChevronDown, ChevronRight, Search, FileText } from 'lucide-react';
+import { ChevronDown, ChevronRight, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface FactCardProps {

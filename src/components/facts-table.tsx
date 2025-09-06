@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { FactGroup, Fact } from '@/types';
+import { FactGroup } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, FileText, AlertTriangle, CheckCircle } from 'lucide-react';

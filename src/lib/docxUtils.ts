@@ -126,43 +126,8 @@ export async function extractTextFromDOCX(file: File): Promise<DOCXTextSnippet[]
   }
 }
 
-// Helper function to detect DOCX list items
-function isDOCXListItem(text: string): boolean {
-  const trimmedText = text.trim();
-  const listPatterns = [
-    /^[\u2022\u2023\u25E6\u2043\u2219\u00B7\u25AA\u25AB\u25CF\u25CB\u25A1\u25A0\u25B2\u25BC\u25C6\u25C7\u25C8\u25C9\u25CA\u25CB\u25CC\u25CD\u25CE\u25CF\u25D0\u25D1\u25D2\u25D3\u25D4\u25D5\u25D6\u25D7\u25D8\u25D9\u25DA\u25DB\u25DC\u25DD\u25DE\u25DF\u25E0\u25E1\u25E2\u25E3\u25E4\u25E5\u25E6\u25E7\u25E8\u25E9\u25EA\u25EB\u25EC\u25ED\u25EE\u25EF\u25F0\u25F1\u25F2\u25F3\u25F4\u25F5\u25F6\u25F7\u25F8\u25F9\u25FA\u25FB\u25FC\u25FD\u25FE\u25FF]/,
-    /^\d+\./,
-    /^[a-zA-Z]\./,
-    /^[ivxlcdm]+\./i, // Roman numerals
-    /^[-*+]/,
-  ];
-  
-  return listPatterns.some(pattern => pattern.test(trimmedText));
-}
 
-// Helper function to determine DOCX list type
-function getDOCXListType(text: string): 'bullet' | 'numbered' | 'roman' | 'alpha' | undefined {
-  const trimmedText = text.trim();
-  
-  if (/^[\u2022\u2023\u25E6\u2043\u2219\u00B7\u25AA\u25AB\u25CF\u25CB\u25A1\u25A0\u25B2\u25BC\u25C6\u25C7\u25C8\u25C9\u25CA\u25CB\u25CC\u25CD\u25CE\u25CF\u25D0\u25D1\u25D2\u25D3\u25D4\u25D5\u25D6\u25D7\u25D8\u25D9\u25DA\u25DB\u25DC\u25DD\u25DE\u25DF\u25E0\u25E1\u25E2\u25E3\u25E4\u25E5\u25E6\u25E7\u25E8\u25E9\u25EA\u25EB\u25EC\u25ED\u25EE\u25EF\u25F0\u25F1\u25F2\u25F3\u25F4\u25F5\u25F6\u25F7\u25F8\u25F9\u25FA\u25FB\u25FC\u25FD\u25FE\u25FF]/.test(trimmedText)) {
-    return 'bullet';
-  } else if (/^\d+\./.test(trimmedText)) {
-    return 'numbered';
-  } else if (/^[ivxlcdm]+\./i.test(trimmedText)) {
-    return 'roman';
-  } else if (/^[a-zA-Z]\./.test(trimmedText)) {
-    return 'alpha';
-  }
-  
-  return undefined;
-}
 
-// Helper function to determine DOCX indent level
-function getDOCXIndentLevel(text: string): number {
-  // Count leading spaces/tabs as indent level
-  const leadingWhitespace = text.match(/^[\s\t]*/)?.[0] || '';
-  return Math.floor(leadingWhitespace.length / 2); // Every 2 spaces = 1 level
-}
 
 export function createDOCXHighlightURL(docxUrl: string, snippet: DOCXTextSnippet): string {
   const params = new URLSearchParams({

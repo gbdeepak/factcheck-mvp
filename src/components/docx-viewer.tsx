@@ -28,7 +28,6 @@ const DOCXViewer: React.FC<DOCXViewerProps> = ({
   const [highlightParams, setHighlightParams] = useState<HighlightParams | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [debugInfo, setDebugInfo] = useState<string>('');
   const [containerReady, setContainerReady] = useState(false);
 
   // Initialize component and load DOCX
@@ -102,7 +101,6 @@ const DOCXViewer: React.FC<DOCXViewerProps> = ({
     try {
       setIsLoading(true);
       setError(null);
-      setDebugInfo('Loading DOCX file...');
 
       // Fetch the DOCX file
       console.log('[DOCXViewer] Fetching DOCX file...');
@@ -126,7 +124,6 @@ const DOCXViewer: React.FC<DOCXViewerProps> = ({
       }
 
       console.log('[DOCXViewer] DOCX rendered successfully');
-      setDebugInfo('DOCX rendered successfully');
       setIsLoading(false);
 
       // Add highlight after rendering
@@ -137,7 +134,6 @@ const DOCXViewer: React.FC<DOCXViewerProps> = ({
     } catch (error) {
       console.error('[DOCXViewer] Error loading DOCX:', error);
       setError('Failed to load DOCX file');
-      setDebugInfo(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setIsLoading(false);
     }
   };

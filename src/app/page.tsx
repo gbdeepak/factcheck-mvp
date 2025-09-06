@@ -11,11 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FactData, FactGroup, FilterType, Fact, DashboardStats } from '@/types';
 import { processFactData, filterFactGroups, searchFactGroups } from '@/lib/data-processor';
-import { getDocumentUrl } from '@/lib/documentMapper';
 import { Search, ClipboardList, AlertTriangle } from 'lucide-react';
 
 export default function HomePage() {
-  const [factData, setFactData] = useState<FactData>({});
   const [factGroups, setFactGroups] = useState<FactGroup[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     totalFacts: 0,
@@ -39,7 +37,6 @@ export default function HomePage() {
     try {
       const response = await fetch('/factIndex.json');
       const data: FactData = await response.json();
-      setFactData(data);
       
       const { factGroups: processedGroups, stats: processedStats } = processFactData(data);
       setFactGroups(processedGroups);
@@ -51,10 +48,6 @@ export default function HomePage() {
     }
   };
 
-  const handleViewDocument = (fact: Fact) => {
-    setSelectedFact(fact);
-    setIsDocumentViewerOpen(true);
-  };
 
   const handleCloseDocumentViewer = () => {
     setIsDocumentViewerOpen(false);

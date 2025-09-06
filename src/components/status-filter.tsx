@@ -15,7 +15,6 @@ const filterOptions = [
 ];
 
 export function StatusFilter({ value, onChange }: StatusFilterProps) {
-  const selectedOption = filterOptions.find(option => option.value === value);
 
   return (
     <div className="relative">
