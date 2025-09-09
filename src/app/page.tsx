@@ -7,6 +7,7 @@ import { StatusFilter } from '@/components/status-filter';
 import { FactsTable } from '@/components/facts-table';
 import { ResizableSidePanel } from '@/components/resizable-side-panel';
 import { DocumentViewer } from '@/components/document-viewer';
+import { DocumentsPage } from '@/components/documents-page';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FactData, FactGroup, FilterType, Fact, DashboardStats } from '@/types';
@@ -14,6 +15,8 @@ import { processFactData, filterFactGroups, searchFactGroups } from '@/lib/data-
 import { Search, ClipboardList, AlertTriangle } from 'lucide-react';
 
 export default function HomePage() {
+  const [activeView, setActiveView] = useState<'consistency-check' | 'documents'>('documents');
+  const [analysisComplete, setAnalysisComplete] = useState(false);
   const [factGroups, setFactGroups] = useState<FactGroup[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     totalFacts: 0,
@@ -82,13 +85,21 @@ export default function HomePage() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-white flex">
-      {/* Sidebar */}
-      <Sidebar activeItem="consistency-check" />
-      
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+  const handleSidebarItemClick = (itemId: string) => {
+    setActiveView(itemId as 'consistency-check' | 'documents');
+  };
+
+  const handleAnalysisComplete = () => {
+    setAnalysisComplete(true);
+  };
+
+  const renderContent = () => {
+    if (activeView === 'documents') {
+      return <DocumentsPage onAnalysisComplete={handleAnalysisComplete} />;
+    }
+
+    return (
+      <>
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-8 py-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-1">
@@ -174,22 +185,42 @@ export default function HomePage() {
         </div>
 
         </div>
+      </>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-white flex">
+      {/* Sidebar */}
+      <Sidebar 
+        activeItem={activeView} 
+        onItemClick={handleSidebarItemClick}
+        analysisComplete={analysisComplete}
+      />
+      
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {renderContent()}
       </div>
 
-      {/* Resizable Side Panel */}
-      <ResizableSidePanel
-        factGroup={selectedFactGroup}
-        isOpen={isSidePanelOpen}
-        onClose={handleCloseSidePanel}
-        onOpenDocument={() => {}} // Not used anymore, handled internally
-      />
+      {/* Resizable Side Panel - Only show for consistency check */}
+      {activeView === 'consistency-check' && (
+        <ResizableSidePanel
+          factGroup={selectedFactGroup}
+          isOpen={isSidePanelOpen}
+          onClose={handleCloseSidePanel}
+          onOpenDocument={() => {}} // Not used anymore, handled internally
+        />
+      )}
 
-      {/* Document Viewer Modal */}
-      <DocumentViewer
-        fact={selectedFact}
-        isOpen={isDocumentViewerOpen}
-        onClose={handleCloseDocumentViewer}
-      />
+      {/* Document Viewer Modal - Only show for consistency check */}
+      {activeView === 'consistency-check' && (
+        <DocumentViewer
+          fact={selectedFact}
+          isOpen={isDocumentViewerOpen}
+          onClose={handleCloseDocumentViewer}
+        />
+      )}
     </div>
   );
 }

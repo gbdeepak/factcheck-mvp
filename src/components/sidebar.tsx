@@ -1,13 +1,20 @@
 'use client';
 
-import { FileText } from 'lucide-react';
+import { FileText, Upload } from 'lucide-react';
 
 interface SidebarProps {
   activeItem?: string;
+  onItemClick?: (itemId: string) => void;
+  analysisComplete?: boolean;
 }
 
-export function Sidebar({ activeItem = 'consistency-check' }: SidebarProps) {
+export function Sidebar({ activeItem = 'documents', onItemClick, analysisComplete = false }: SidebarProps) {
   const navigationItems = [
+    {
+      id: 'documents',
+      label: 'Documents',
+      icon: Upload,
+    },
     {
       id: 'consistency-check',
       label: 'Consistency Check',
@@ -28,20 +35,24 @@ export function Sidebar({ activeItem = 'consistency-check' }: SidebarProps) {
           {navigationItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeItem === item.id;
+            const isDisabled = item.id === 'consistency-check' && !analysisComplete;
             
             return (
               <li key={item.id}>
-                <a
-                  href="#"
-                  className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
+                <button
+                  onClick={() => !isDisabled && onItemClick?.(item.id)}
+                  disabled={isDisabled}
+                  className={`w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isDisabled
+                      ? 'text-gray-400 cursor-not-allowed bg-gray-50'
+                      : isActive
                       ? 'bg-blue-50 text-blue-700 border border-blue-200'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
                   <Icon className="h-4 w-4 mr-3" />
                   {item.label}
-                </a>
+                </button>
               </li>
             );
           })}
